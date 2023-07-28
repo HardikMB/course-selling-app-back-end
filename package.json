@@ -1,0 +1,22 @@
+{
+  "name": "course-selling-app-back-end",
+  "version": "1.0.0",
+  "description": "backend for course-selling application built in typescript and node+express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HardikMB/course-selling-app-back-end.git"
+  },
+  "author": "Hardik Bhangale",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HardikMB/course-selling-app-back-end/issues"
+  },
+  "homepage": "https://github.com/HardikMB/course-selling-app-back-end#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
