@@ -5,10 +5,11 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = "ScretSauce";
 const router = express.Router();
-
+const cors = require("cors")
 app.use("/api/v1", router);
 router.use(express.json());
-
+app.use(cors())
+router.use(cors())
 router.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET");
   next();
@@ -60,7 +61,7 @@ router.post("/admin/signup", async (req, res) => {
     const token = jwt.sign({ username }, SECRET_KEY);
     let newAdmin = new Admin({ username, password });
     newAdmin.save();
-    res.status(201).send("Admin Created Succesfully:" + token);
+    res.json({Status:"Admin Created Succesfully" , token:token}).send();
   }
 });
 
