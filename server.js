@@ -10,6 +10,7 @@ app.use("/api/v1", router);
 router.use(express.json());
 app.use(cors())
 router.use(cors())
+
 router.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET");
   next();
