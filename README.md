@@ -5,3 +5,5 @@ This project will have backend of course selling app. The front will be present 
 
 Command to start Mongo on Local
 mongod --dbpath /var/lib/mongo --logpath /var/log/mongodb/mongod.log --fork
+
+do npm run dev to start since nodeman in already in there for you.
