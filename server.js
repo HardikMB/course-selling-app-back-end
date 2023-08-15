@@ -72,12 +72,12 @@ router.post("/admin/signup", async (req, res) => {
   const admin = await Admin.findOne({ username });
 
   if (admin) {
-    res.status(403).send("Admin Already Signed up");
+    res.status(403).json({message:"Admin Already Signed up"});
   } else {
     const token = jwt.sign({ username }, SECRET_KEY);
     let newAdmin = new Admin({ username, password });
     newAdmin.save();
-    res.json({ Status: "Admin Created Succesfully", token: token }).send();
+    res.json({ Status: "Admin Created Succesfully", token: token });
   }
 });
 
@@ -89,9 +89,9 @@ router.post("/admin/login", async (req, res) => {
 
   if (admin) {
     const token = jwt.sign({ username }, SECRET_KEY);
-    res.status(200).send.json({ status: "Login successful", token: token });
+    res.status(200).json({ status: "Login successful", token: token });
   } else {
-    res.status(403).send("Invalid Login Credentials Provided");
+    res.status(403).json({message:"Invalid Login Credentials Provided"});
   }
 });
 
@@ -102,12 +102,17 @@ router.put("/admin/changepass", authenticationOfJwtToken, async (req, res) => {
   if (oldAdmin.password == oldPassword && oldAdmin.username != null) {
     const status = await oldAdmin.updateOne({ password: password });
     console.log(status); // to check update status
-    res.send("Password Updated Succesfully:");
+    res.json({message:"Password Updated Succesfully:"});
   } else {
-    res.send("Please enter correct old password");
+    res.json({message:"Please enter correct old password"});
   }
 });
 
+router.get("/admin/me", authenticationOfJwtToken, (req, res) => {
+  if (req.user.username) {
+    res.json({ user: req.user.username });
+  }
+});
 /* Course CRUD-Start */
 
 router.post("/courses/add", authenticationOfJwtToken, async (req, res) => {
@@ -115,29 +120,30 @@ router.post("/courses/add", authenticationOfJwtToken, async (req, res) => {
 
   const coursefound = await Course.findOne({ title });
   if (coursefound) {
-    res.send("Course with same title already exists");
+    res.json({message:"Course with same title already exists"});
   } else {
     const course = new Course({ title, imgSrc, description });
     course.save();
-    res.send("Course Added with course ID:" + course.id);
+    res.json({message:"Course Added with course ID:" + course.id});
   }
 });
 
 router.get("/courses/:courseId", authenticationOfJwtToken, async (req, res) => {
   const course = await Course.findById(req.params.courseId);
   if (course) {
-    res.json(course).send();
+    res.json({course:course})
   } else {
-    res.status(404).send();
+    res.status(404).json({message:"The course not found with provided id"})
   }
 });
 
 router.get("/courses", authenticationOfJwtToken, async (req, res) => {
-  const course = await Course.find();
-  if (course) {
-    res.json(course).send();
+  const courses = await Course.find();
+  if (courses) {
+    console.log({ courses });
+    res.json({courses});
   } else {
-    res.status(404).send();
+    res.status(404)
   }
 });
 
@@ -158,7 +164,7 @@ router.delete(
   async (req, res) => {
     const del = await Course.findByIdAndDelete(req.params.courseId);
     console.log(del);
-    res.send("Deleted successfully");
+    res.json({message:"Deleted successfully"});
   }
 );
 
@@ -172,12 +178,12 @@ router.post("/user/signup", async (req, res) => {
   const user = await User.findOne({ username });
 
   if (user) {
-    res.status(403).send("User Already Signed up");
+    res.status(403).json({message:"User Already Signed up"});
   } else {
     const token = jwt.sign({ username }, SECRET_KEY);
     let newUser = new User({ username, password });
     newUser.save();
-    res.json({ Status: "User Created Succesfully", token: token }).send();
+    res.json({ Status: "User Created Succesfully", token: token });
   }
 });
 
@@ -189,9 +195,9 @@ router.post("/user/login", async (req, res) => {
 
   if (user) {
     const token = jwt.sign({ username }, SECRET_KEY);
-    res.status(200).send({ status: "Login successful", token: token });
+    res.status(200).json({ status: "Login successful", token: token });
   } else {
-    res.status(403).send("Invalid Login Credentials Provided");
+    res.status(403).json({message:"Invalid Login Credentials Provided"});
   }
 });
 
@@ -202,33 +208,33 @@ router.put("/user/changepass", authenticationOfJwtToken, async (req, res) => {
   if (oldUser.password == oldPassword && oldUser.username != null) {
     const status = await oldUser.updateOne({ password: password });
     console.log(status); // to check update status
-    res.send("Password Updated Succesfully:");
+    res.json({message:"Password Updated Succesfully:"});
   } else {
-    res.send("Please enter correct old password");
+    res.json({message:"Please enter correct old password"});
   }
 });
 
 router.post("/user/courses/add", authenticationOfJwtToken, async (req, res) => {
   const { username, title } = req.body;
 
-  const coursefound = await Course.findOne({ title:title });
+  const coursefound = await Course.findOne({ title: title });
   if (coursefound) {
-    const user = await User.findOne({username:username});
-    if(user){
+    const user = await User.findOne({ username: username });
+    if (user) {
       console.log(user.id);
       console.log(coursefound.id);
       //todo - Add logic to return response if already course is purchased
       user.purchasedCourses.push(coursefound);
       user.save();
-  }
-  else{
-    res.status(404).send("User not found");
-  }
-    res.send("Thank you for purchasing the course with ID:" + coursefound.id);
+    } else {
+      res.status(404).json({message:"User not found"});
+    }
+    res.json("Thank you for purchasing the course with ID:" + coursefound.id);
   } else {
-    res.status(404).send("Course not found");
+    res.status(404).json({message:"Course not found"});
   }
 });
+
 
 router.delete(
   "/user/courses:courseId",
